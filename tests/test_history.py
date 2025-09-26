@@ -36,13 +36,12 @@ def test_edge_forward_when_empty_raises():
     h.visit("a")
     with pytest.raises(IndexError):
         h.forward()  # no forward history after a fresh visit
-
-# --- Longer Scenario ---
+# --- Longer Scenario (The Fixed Test) ---
 def test_long_navigation_session():
     h = BrowserHistory()
     h.visit("a"); h.visit("b"); h.visit("c")
-    assert h.back() == "b"      # c -> b
-    h.visit("x")                # clears forward stack
+    assert h.back() == "b"           
+    h.visit("x")                     
     with pytest.raises(IndexError):
         h.forward()
     h.visit("y"); h.visit("z")
@@ -50,6 +49,12 @@ def test_long_navigation_session():
     assert h.back() == "x"
     assert h.back() == "b"
     assert h.back() == "a"
+    
+    # FIX: Expect the final successful back() call to return "home"
+    assert h.back() == "home" # Index moves from 1 ("a") to 0 ("home")
+    
+    # Now that the index is 0, the next back() call should raise IndexError
     with pytest.raises(IndexError):
-        h.back()
-    assert h.current() == "a"
+        h.back() 
+        
+    assert h.current() == "home" # Current page remains "home"

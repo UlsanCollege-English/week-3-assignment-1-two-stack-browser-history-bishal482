@@ -1,32 +1,48 @@
 class BrowserHistory:
-    def __init__(self, start="home"):
-        self._cur = start
-        self._back = []
-        self._fwd = []
-
-    def visit(self, url: str) -> None:
-        # push current into back if it's not "home"
-        if self._cur != "home":
-            self._back.append(self._cur)
-        self._cur = url
-        self._fwd.clear()
-
-    def back(self) -> str:
-        if not self._back:
-            raise IndexError("No pages in back history")
-        self._fwd.append(self._cur)
-        self._cur = self._back.pop()
-        return self._cur
-
-    def forward(self) -> str:
-        if not self._fwd:
-            raise IndexError("No pages in forward history")
-        self._back.append(self._cur)
-        self._cur = self._fwd.pop()
-        return self._cur
+    """
+    Manages a simple browser history using a list to store the visited URLs
+    and an index to track the current position.
+    """
+    def __init__(self):
+        # Stores the history of visited URLs
+        self.history = ["home"]
+        # Index of the current page in the history list
+        self.current_index = 0
 
     def current(self) -> str:
-        return self._cur
+        """
+        Returns the URL of the current page.
+        """
+        return self.history[self.current_index]
 
-    def __repr__(self):
-        return f"<BrowserHistory back={self._back} current={self._cur!r} forward={list(reversed(self._fwd))}>"
+    def visit(self, url: str):
+        """
+        Visits a new URL. This clears any pages that were in the "forward" history.
+        """
+        # Slicing clears forward history if current_index is not at the end
+        if self.current_index < len(self.history) - 1:
+            self.history = self.history[:self.current_index + 1]
+
+        # Add the new URL and update the index
+        self.history.append(url)
+        self.current_index = len(self.history) - 1
+
+    def back(self) -> str:
+        """
+        Goes back to the previous page. Raises IndexError if at the start of history.
+        """
+        if self.current_index == 0:
+            raise IndexError("Cannot go back, already at the start of history.")
+
+        self.current_index -= 1
+        return self.history[self.current_index]
+
+    def forward(self) -> str:
+        """
+        Goes forward to the next page. Raises IndexError if at the end of history.
+        """
+        if self.current_index == len(self.history) - 1:
+            raise IndexError("Cannot go forward, no forward history exists.")
+
+        self.current_index += 1
+        return self.history[self.current_index]
