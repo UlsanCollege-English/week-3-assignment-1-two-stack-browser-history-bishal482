@@ -67,3 +67,9 @@ class BrowserHistory:
         Returns the URL of the current page.
         """
         return self._history[self._current_index]
+
+# Example of how the truncation works for future reference:
+# History: ["home", "a", "b", "c"] Index: 3 (on "c")
+# back() -> Index: 2 (on "b")
+# visit("x") -> _history becomes ["home", "a", "b", "x"] Index: 3 (on "x")
+# The "c" page is now lost from history.
